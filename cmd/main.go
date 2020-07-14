@@ -3,12 +3,23 @@ package main
 import (
 	"fmt"
 	"github.com/denisacostaq/glanguage/src"
-	"log"
+	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 	"os"
 	"strconv"
-
-	"github.com/urfave/cli"
 )
+
+func init() {
+	// Log as JSON instead of the default ASCII formatter.
+	//log.SetFormatter(&log.JSONFormatter{})
+
+	// Output to stdout instead of the default stderr
+	// Can be any io.Writer, see below for File example
+	log.SetOutput(os.Stdout)
+
+	// Only log the warning severity or above.
+	log.SetLevel(log.InfoLevel)
+}
 
 func main() {
 	var portArg string
@@ -30,13 +41,14 @@ func main() {
 			if len(portArg) > 0 {
 				var err error
 				if port, err = strconv.Atoi(portArg); err != nil {
+					log.WithField("port", portArg).Errorln("unable to get port as a number")
 					return err
 				}
 				if port < 1 || port > 65535 {
 					return fmt.Errorf("the number %d is not in the valid range from 1 to 65535", port)
 				}
 				if port <= 1023 {
-					fmt.Println("Warning, system port range")
+					log.WithField("port", port).Warningln("this port is in the reserved system range")
 				}
 			}
 			s := src.NewServer(uint16(port))
@@ -45,6 +57,6 @@ func main() {
 	}
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		log.WithError(err).Errorln("unable to start the application")
 	}
 }

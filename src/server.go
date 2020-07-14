@@ -3,7 +3,7 @@ package src
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -18,7 +18,7 @@ func NewServer(port uint16) *Server {
 func (s *Server) Start() error {
 	r := mux.NewRouter()
 	addr := fmt.Sprintf(":%d", s.port)
-	log.Printf("Starting server in %s ...", addr)
+	log.WithField("addr", addr).Infoln("Starting server...")
 	if err := http.ListenAndServe(addr, r); err != nil {
 		return err
 	}
