@@ -15,11 +15,12 @@ func NewServer(port uint16) *Server {
 	return &Server{port: port}
 }
 
-func (s *Server) Start() {
+func (s *Server) Start() error {
 	r := mux.NewRouter()
 	addr := fmt.Sprintf(":%d", s.port)
 	log.Printf("Starting server in %s ...", addr)
 	if err := http.ListenAndServe(addr, r); err != nil {
-		log.Fatalln(err)
+		return err
 	}
+	return nil
 }
