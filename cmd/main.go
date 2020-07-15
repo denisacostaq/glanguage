@@ -10,17 +10,16 @@ import (
 )
 
 func init() {
-	// Log as JSON instead of the default ASCII formatter.
-	//log.SetFormatter(&log.JSONFormatter{})
-
 	// Output to stdout instead of the default stderr
-	// Can be any io.Writer, see below for File example
 	log.SetOutput(os.Stdout)
 
 	// Only log the warning severity or above.
 	log.SetLevel(log.InfoLevel)
 }
 
+// curl --request POST --header "Content-Type: application/json" http://localhost:8080/word --data '{"english-word": "apple"}'
+// curl --request POST --header "Content-Type: application/json" http://localhost:8080/sentence --data '{"english-sentence": "hello world"}'
+// curl http://localhost:8080/history
 func main() {
 	var portArg string
 	app := &cli.App{
@@ -53,6 +52,10 @@ func main() {
 			}
 			s := src.NewServer(uint16(port))
 			return s.Start()
+		},
+		Authors: []*cli.Author{&cli.Author{
+			Name: "Alvaro Denis",
+			Email: "denisacostaq@gmail.co"},
 		},
 	}
 	err := app.Run(os.Args)
