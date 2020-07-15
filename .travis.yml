@@ -1,0 +1,16 @@
+language: go
+go:
+  - 1.11
+  - 1.12
+
+os:
+  - linux
+  - osx
+
+env:
+  - GO111MODULE=on
+
+install: true
+
+script:
+  - go test github.com/denisacostaq/glanguage/src/services
