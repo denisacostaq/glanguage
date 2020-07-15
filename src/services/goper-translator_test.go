@@ -1,14 +1,9 @@
 package services
 
 import (
-	"github.com/stretchrcom/testify/suite"
+	"github.com/stretchr/testify/suite"
 	"testing"
 )
-
-/*	"github.com/stretchr/testify/require"
-
-	"github.com/stretchr/testify/mock"*/
-	//"github.com/stretchr/testify/suite"
 
 type dummyTranslator struct {
 	suite.Suite

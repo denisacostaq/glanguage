@@ -3,7 +3,7 @@ package services
 import (
 	"encoding/json"
 	"errors"
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/denisacostaq/glanguage/src/models"
 	"strings"
 )

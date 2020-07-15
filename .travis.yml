@@ -1,7 +1,7 @@
 language: go
 go:
-  - 1.11
-  - 1.12
+  - 1.13
+  - 1.14
 
 os:
   - linux
@@ -13,4 +13,4 @@ env:
 install: true
 
 script:
-  - go test github.com/denisacostaq/glanguage/src/services
+  - go test ./...
