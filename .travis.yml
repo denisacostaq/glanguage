@@ -1,16 +1,22 @@
 language: go
 go:
-  - 1.13
-  - 1.14
-
+- 1.13
+- 1.14
 os:
-  - linux
-  - osx
+- linux
+- osx
 
 env:
+  matrix:
   - GO111MODULE=on
+  global:
+    secure: SL7NLnaUIIY4Gd7MWgDR990hzT30/QiiU5LGHkA3MuOJhSDg1zeOkYSSVJi0m57lNKMgC7SdBBxHhD6UMxJ4iarBWrbWz8fyEybQaYVT6/SI2ZINUv+3wBqz9RbM6ykALuivEE5+cHyEDSN2CeHWXyoiN+sujWKYGOnb7qE102TFUCWAhzR1Yf7CHbvFA4J0QowDxlbYe7mRhxKqTswhyEp2sspgtpKwiAnvYmejcFjUjZG8QOtb7Wh/3LUhFMs4N0p2U+PH3y5LYnJ/R69rQf5lG30l9ZKodPqy13SAtZJYuNWSa+7BI/WznlhxKKRqsVRaMP5oVajMZcbNQp1aUROb+hm4O+LNisvOr2I8gjdfc4fP8FMLODLaedSXwT2Q+jJAX/NWHaiWFQ7rk/13LI34pi7vj4ZbntwZpurluw8ql8B2XekK/xP5wuiLeVFeeGwnayhPau4c7HB74s4mkk1FmgJR0yI9OcWgwE9LHIANUAzrYlxNWxKES+Pu6/yFNDukoUdtloW8Ned6VLewvwyPbMEftpnsj/3K6ie1eB/JjoOEqj+6CVdGZwGv+J2rk/DjLnJR4p5LfAMRc5cCq5Lm93nE5KsGT/AAMUqHRXao7qDmgJfkR165W7NPrHy8a6M5zqArBC/gNhBLFilPfyrYM8m+O/mEWIBJu7Vg+RE=
 
+before_install:
+- GO111MODULE=off go get github.com/mattn/goveralls
 install: true
 
 script:
-  - go test ./...
+- go build -o glanguage github.com/denisacostaq/glanguage/cmd
+- go test -covermode=count -coverprofile=profile.cov ./...
+- $GOPATH/bin/goveralls -coverprofile=profile.cov -service=travis-pro
