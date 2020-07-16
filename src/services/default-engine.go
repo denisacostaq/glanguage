@@ -23,7 +23,7 @@ func NewDefaultTranslatorEngine(ds repository.DataSource, tr func(word string) (
 func CreateDefaultEngine() TranslatorEngine {
 	return NewDefaultTranslatorEngine(
 		dataSource,
-		NewDummyTranslator().Translate2Gophers,
+		NewGopherTranslator().Translate,
 		)
 }
 
@@ -36,27 +36,61 @@ func (de *DefaultTranslatorEngine) TranslateWord(word models.TranslationPair) er
 	word.SetTranslated(tr)
 	if err := de.ds.Save(word); err != nil {
 		log.WithFields(log.Fields{"word": word, "err": err}).Errorln("error saving word")
-		return err
+		return InternalErr
+	}
+	return nil
+}
+
+func removeLastSymbol(sentence string) string {
+	if len(sentence) == 0 || len(sentence) == 1 {
+		return ""
+	}
+	return sentence[:len(sentence)-1]
+}
+
+func validateSentence(sentence string) error {
+	if len(sentence) == 0 {
+		return EmptyValueErr
+	}
+	if !strings.Contains(sentence, " ") {
+		return SentenceTooShortErr
+	}
+	lastSymbol := rune(sentence[len(sentence)-1])
+	dotMark := rune(0x2E)
+	questionMark := rune(0x3F)
+	exclamationMark := rune(0x21)
+	if lastSymbol != dotMark && lastSymbol != questionMark && lastSymbol != exclamationMark {
+		return MalformedSentenceErr
 	}
 	return nil
 }
 
 func (de *DefaultTranslatorEngine) TranslateSentence(sentence models.TranslationPair) error {
-	words := strings.Split(sentence.English(), " ")
+	if err := validateSentence(sentence.English()); err != nil {
+		log.WithError(err).Errorln(InvalidSentenceErr)
+		return InvalidSentenceErr
+	}
+	lastSymbol := rune(sentence.English()[len(sentence.English())-1])
+	words := strings.Split(removeLastSymbol(sentence.English()), " ")
 	translatedWords := make([]string, len(words))
+	ignored := 0
 	for idx, word := range words {
+		if strings.ContainsRune(word, apostropheUnicode) {
+			ignored++
+			continue
+		}
 		var err error
-		translatedWords[idx], err = de.translate(word)
+		translatedWords[idx-ignored], err = de.translate(word)
 		if err != nil {
 			log.WithFields(log.Fields{"word": word, "err": err}).Errorln("unable to translate word")
 			log.WithFields(log.Fields{"sentence": sentence, "err": err}).Errorln("unable to translate sentence")
 			return err
 		}
 	}
-	sentence.SetTranslated(strings.Join(translatedWords, " "))
+	sentence.SetTranslated(strings.Join(translatedWords, " ") + string(lastSymbol))
 	if err := de.ds.Save(sentence); err != nil {
 		log.WithFields(log.Fields{"sentence": sentence, "err": err}).Errorln("error saving sentence")
-		return err
+		return InternalErr
 	}
 	return nil
 }

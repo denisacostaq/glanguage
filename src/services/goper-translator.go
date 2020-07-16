@@ -5,16 +5,18 @@ import (
 	"strings"
 )
 
-type DummyTranslator struct {
+// GopherTranslator	specify the translation from English to the
+// Gophers's language specification
+type GopherTranslator struct {
 }
 
-func NewDummyTranslator() Translator {
-	return &DummyTranslator{}
+func NewGopherTranslator() Translator {
+	return &GopherTranslator{}
 }
 
 // translateWithVowelPrefix 1. If a word starts with a vowel letter, add prefix “g” to
 // the word (ex. apple => gapple)
-func (tr *DummyTranslator) translateWithVowelPrefix(word string) string {
+func (tr *GopherTranslator) translateWithVowelPrefix(word string) string {
 	var sb strings.Builder
 	if isVowel(rune(word[0])) {
 		sb.WriteRune('g')
@@ -27,66 +29,86 @@ func (tr *DummyTranslator) translateWithVowelPrefix(word string) string {
 // translateWithXrPrefix 2. If a word starts with the consonant letters “xr”, add the prefix
 // “ge” to the begging of the word. Such words as “xray” actually sound in the beginning
 // with vowel sound as you pronounce them so a true gopher would say “gexray”.
-func (tr *DummyTranslator) translateWithXrPrefix(str string) string {
+func (tr *GopherTranslator) translateWithXrPrefix(word string) string {
 	var sb strings.Builder
-	if strings.HasPrefix(str, "xr") {
+	if strings.HasPrefix(word, "xr") {
 		sb.WriteString("ge")
-		sb.WriteString(str)
+		sb.WriteString(word)
 		return sb.String()
 	}
-	return str
+	return word
 }
 
 // translateWithConsonantPrefix 3. If a word starts with a consonant sound, move it to the end
 // of the word and then add “ogo” suffix to the word. Consonant sounds can be made
 // up of multiple consonants, a.k.a. a consonant cluster (e.g. "chair" -> "airchogo”).
-func (tr *DummyTranslator) translateWithConsonantPrefix(str string) string {
+func (tr *GopherTranslator) translateWithConsonantPrefix(word string) string {
 	var sb strings.Builder
-	if !isVowel(rune(str[0])) {
+	if !isVowel(rune(word[0])) {
+		const suffix = "ogo"
 		var consonantPrefixLen int
-		for consonantPrefixLen = 0; !isVowel(rune(str[consonantPrefixLen])); consonantPrefixLen++ {}
-		sb.WriteString(str[consonantPrefixLen:])
-		sb.WriteString(str[:consonantPrefixLen])
-		sb.WriteString("ogo")
+		for consonantPrefixLen = 0; consonantPrefixLen < len(word) && !isLikeVowel(rune(word[consonantPrefixLen])); consonantPrefixLen++ {}
+		if consonantPrefixLen == len(word) {
+			return word + suffix
+		}
+		sb.WriteString(word[consonantPrefixLen:])
+		sb.WriteString(word[:consonantPrefixLen])
+		sb.WriteString(suffix)
 		return sb.String()
 	}
-	return str
+	return word
 }
 
 // translateWithConsonantPrefixFollowedBuQu 4. If a word starts with a consonant sound followed by "qu", move it
 // to the end of the word, and then add "ogo" suffix to the word
 // (e.g. "square" -> "aresquogo").
-func (tr *DummyTranslator) translateWithConsonantPrefixFollowedBuQu(str string) string {
+func (tr *GopherTranslator) translateWithConsonantPrefixFollowedBuQu(word string) string {
 	var sb strings.Builder
-	if !isVowel(rune(str[0])) {
+	const qu = "qu"
+	if !isVowel(rune(word[0])) && strings.Contains(word, qu) {
 		var consonantPrefixLen int
-		for consonantPrefixLen = 0; !isVowel(rune(str[consonantPrefixLen])) && str[consonantPrefixLen] != 'q'; consonantPrefixLen++ {}
-		log.Errorln(str, isVowel(rune(str[0])), consonantPrefixLen, str[consonantPrefixLen:], strings.HasPrefix(str[consonantPrefixLen:], "qu"))
-		if strings.HasPrefix(str[consonantPrefixLen:], "qu") {
-			sb.WriteString(str[consonantPrefixLen+2:])
-			sb.WriteString(str[:consonantPrefixLen+2])
+		var quIndex = 0
+		if strings.HasPrefix(word, qu) {
+			if !strings.Contains(word[len(qu):], qu) {
+				return word
+			}
+			quIndex = strings.Index(word[len(qu):], qu) + len(qu)
+		} else {
+			quIndex = strings.Index(word, qu)
+		}
+		for consonantPrefixLen = 0; !isLikeVowel(rune(word[consonantPrefixLen])) && (word[consonantPrefixLen] != 'q' || consonantPrefixLen < quIndex); consonantPrefixLen++ {}
+		log.Warningln(consonantPrefixLen, word, strings.HasPrefix(word[consonantPrefixLen:], "qu"), word[consonantPrefixLen+len(qu):])
+		log.Warningln(word[:consonantPrefixLen+len(qu)])
+		if strings.HasPrefix(word[consonantPrefixLen:], "qu") {
+			sb.WriteString(word[consonantPrefixLen+len(qu):])
+			sb.WriteString(word[:consonantPrefixLen+len(qu)])
 			sb.WriteString("ogo")
 			return sb.String()
 		}
 	}
-	return str
+	return word
 }
 
-func (tr *DummyTranslator) Translate2Gophers(word string) (string, error) {
-	const apostropheUnicode = rune(0x27)
-	log.WithField("word", word).Info("translating word...")
-	if len(word) == 0 || strings.ContainsRune(word, apostropheUnicode) {
-		return word, nil
+const apostropheUnicode = rune(0x27)
+func (tr *GopherTranslator) Translate(word string) (string, error) {
+	if len(word) == 0 {
+		log.Errorln("empty word received")
+		return "", WordTooShortErr
 	}
+	if strings.ContainsRune(word, apostropheUnicode) {
+		log.WithField("word", word).Errorln("gophers don’t understand shortened versions of words or apostrophes")
+		return "", InvalidWordErr
+	}
+	log.WithField("word", word).Info("translating word...")
 	translated := tr.translateWithVowelPrefix(word)
 	if word == translated {
 		translated = tr.translateWithXrPrefix(word)
 	}
 	if word == translated {
-		translated = tr.translateWithConsonantPrefix(word)
+		translated = tr.translateWithConsonantPrefixFollowedBuQu(word)
 	}
 	if word == translated {
-		translated = tr.translateWithConsonantPrefixFollowedBuQu(word)
+		translated = tr.translateWithConsonantPrefix(word)
 	}
 	log.WithFields(log.Fields{"word": word, "translated": translated}).Debug("translating word...")
 	return translated, nil

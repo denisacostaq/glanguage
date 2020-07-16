@@ -37,7 +37,7 @@ func (suite *dummyTranslator) TestTranslateWithVowelPrefix() {
 		"iceberg": "giceberg",
 		"yellow": "yellow",
 	}
-	tr := NewDummyTranslator().(*DummyTranslator)
+	tr := NewGopherTranslator().(*GopherTranslator)
 
 	// When
 	TranslatePathTests(suite, tr.translateWithVowelPrefix, translations)
@@ -50,7 +50,7 @@ func (suite *dummyTranslator) TestTranslateWithXrPrefix() {
 		"xreedfd": "gexreedfd",
 		"xrxrdfd": "gexrxrdfd",
 	}
-	tr := NewDummyTranslator().(*DummyTranslator)
+	tr := NewGopherTranslator().(*GopherTranslator)
 
 	// When
 	TranslatePathTests(suite, tr.translateWithXrPrefix, translations)
@@ -63,8 +63,11 @@ func (suite *dummyTranslator) TestTranslateWithConsonantPrefix() {
 		"call": "allcogo",
 		"phone": "onephogo",
 		"thphone": "onethphogo",
+		"my": "ymogo",
+		"jjjj": "jjjjogo",
+		"t": "togo",
 	}
-	tr := NewDummyTranslator().(*DummyTranslator)
+	tr := NewGopherTranslator().(*GopherTranslator)
 
 	// When
 	TranslatePathTests(suite, tr.translateWithConsonantPrefix, translations)
@@ -75,8 +78,13 @@ func (suite *dummyTranslator) TestTranslateWithConsonantPrefixFollowedBuQu() {
 	translations := map[string]string{
 		"square": "aresquogo",
 		"trquare": "aretrquogo",
+		"qu": "qu",
+		"rqu": "rquogo",
+		"drquee": "eedrquogo",
+		"equ": "equ",
+		"qqu": "qquogo",
 	}
-	tr := NewDummyTranslator().(*DummyTranslator)
+	tr := NewGopherTranslator().(*GopherTranslator)
 
 	// When
 	TranslatePathTests(suite, tr.translateWithConsonantPrefixFollowedBuQu, translations)
@@ -84,17 +92,17 @@ func (suite *dummyTranslator) TestTranslateWithConsonantPrefixFollowedBuQu() {
 
 func (suite *dummyTranslator) TestTranslateIgnoreApostrophe() {
 	// Giving
-	translations := map[string]string{
-		"a'pple": "a'pple",
-		"shouldn't": "shouldn't",
+	translations := map[string]error {
+		"a'pple": InvalidWordErr,
+		"shouldn't": InvalidWordErr,
 	}
-	tr := NewDummyTranslator().(*DummyTranslator)
+	tr := NewGopherTranslator().(*GopherTranslator)
 
 	// When
-	res := make(map[string]string)
+	res := make(map[string]error)
 	for k := range translations {
 		var err error
-		res[k], err = tr.Translate2Gophers(k)
+		_, res[k] = tr.Translate(k)
 		suite.NoError(err)
 	}
 

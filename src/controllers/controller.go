@@ -18,7 +18,16 @@ func TranslateWord(w http.ResponseWriter, r *http.Request) {
 	eng := services.CreateDefaultEngine()
 	if err := eng.TranslateWord(&word); err != nil {
 		log.WithError(err).Errorln("unable to translate word")
+		if err == services.InvalidWordErr {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			return
+		}
 		w.WriteHeader(http.StatusInternalServerError)
+		if err == services.InternalErr {
+			w.Write([]byte(err.Error()))
+			return
+		}
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
@@ -39,7 +48,16 @@ func TranslateSentence(w http.ResponseWriter, r *http.Request) {
 	eng := services.CreateDefaultEngine()
 	if err := eng.TranslateSentence(&sentence); err != nil {
 		log.WithError(err).Errorln("unable to translate sentence")
+		if err == services.InvalidSentenceErr {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			return
+		}
 		w.WriteHeader(http.StatusInternalServerError)
+		if err == services.InternalErr {
+			w.Write([]byte(err.Error()))
+			return
+		}
 		return
 	}
 	w.WriteHeader(http.StatusCreated)

@@ -2,13 +2,21 @@ package services
 
 import (
 	"github.com/denisacostaq/glanguage/src/models"
+	"errors"
 )
+
+var SentenceTooShortErr = errors.New("sentence should have more than one word")
+var EmptyValueErr = errors.New("you should send a value")
+var MalformedSentenceErr = errors.New("sentences should end with dot, question or exclamation mark")
+var InvalidSentenceErr = errors.New("invalid sentence")
+var InternalErr = errors.New("an internal error occurred")
+var WordTooShortErr = errors.New("word should have at least a character")
+var InvalidWordErr = errors.New("invalid word")
 
 // Translator specify translation operations
 type Translator interface {
-	// Translate2Gophers specify the translation from English to the
-	// Gophers's language specification
-	Translate2Gophers(word string) (string, error)
+	// Translate specify the translation from English to another language specification
+	Translate(word string) (string, error)
 }
 
 // TranslatorEngine handle the translations operations to an specific
