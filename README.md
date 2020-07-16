@@ -12,6 +12,7 @@ Gopher's language command line interface server documentation.
 
 # Documentation
 - [CLI Documentation](#cli-documentation)
+  - [System Requirements](#system-requirements)
   - [Install](#install)
   - [Usage](#usage)
     - [Run the server](#run-the-server)
@@ -20,6 +21,10 @@ Gopher's language command line interface server documentation.
         - [Change Default Port](#change-default-port)
 
 <!-- /MarkdownTOC -->
+
+## System Requirements
+
+You need to have golang (version >= 1.12) installed on your system. To install go, just follow the [official instructions](#https://golang.org/doc/install).
 
 ## Install
 
