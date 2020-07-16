@@ -73,8 +73,9 @@ func (tr *DummyTranslator) translatePath4(str string) string {
 }
 
 func (tr *DummyTranslator) Translate2Gophers(word string) (string, error) {
+	const apostropheUnicode = rune(0x27)
 	log.WithField("word", word).Info("translating word...")
-	if len(word) == 0 {
+	if len(word) == 0 || strings.ContainsRune(word, apostropheUnicode) {
 		return word, nil
 	}
 	translated := tr.translatePath1(word)

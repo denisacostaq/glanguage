@@ -81,3 +81,26 @@ func (suite *dummyTranslator) TestTranslatePath4() {
 	// When
 	TranslatePathTests(suite, tr.translatePath4, translations)
 }
+
+func (suite *dummyTranslator) TestTranslateIgnoreApostrophe() {
+	// Giving
+	translations := map[string]string{
+		"a'pple": "a'pple",
+		"shouldn't": "shouldn't",
+	}
+	tr := NewDummyTranslator().(*DummyTranslator)
+
+	// When
+	res := make(map[string]string)
+	for k := range translations {
+		var err error
+		res[k], err = tr.Translate2Gophers(k)
+		suite.NoError(err)
+	}
+
+	// Then
+	for k, v := range translations {
+		suite.Equal(v, res[k])
+	}
+
+}
