@@ -64,7 +64,6 @@ func History(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content", "make a midleware")
 	w.WriteHeader(http.StatusOK)
 	w.Write(resp)
 }

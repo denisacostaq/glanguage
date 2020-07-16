@@ -18,6 +18,7 @@ func NewServer(port uint16) *Server {
 
 func (s *Server) Start() error {
 	r := mux.NewRouter()
+	r.Use(contentTypeMiddleware)
 	r.HandleFunc("/word", controllers.TranslateWord).Methods(http.MethodPost)
 	r.HandleFunc("/sentence", controllers.TranslateSentence).Methods(http.MethodPost)
 	r.HandleFunc("/history", controllers.History).Methods(http.MethodGet)
@@ -27,4 +28,11 @@ func (s *Server) Start() error {
 		return err
 	}
 	return nil
+}
+
+func contentTypeMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		next.ServeHTTP(w, r)
+	})
 }
