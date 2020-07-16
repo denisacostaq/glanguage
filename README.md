@@ -24,7 +24,7 @@ Gopher's language command line interface server documentation.
 
 ## System Requirements
 
-You need to have golang (version >= 1.12) installed on your system. To install go, just follow the [official instructions](#https://golang.org/doc/install).
+You need to have golang (version >= 1.12) installed on your system. To install go, just follow the [official instructions](https://golang.org/doc/install)
 
 ## Install
 
