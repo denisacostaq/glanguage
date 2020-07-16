@@ -29,7 +29,7 @@ func TranslatePathTests(suite *dummyTranslator, translator func(string) string, 
 	}
 }
 
-func (suite *dummyTranslator) TestTranslatePath1() {
+func (suite *dummyTranslator) TestTranslateWithVowelPrefix() {
 	// Giving
 	translations := map[string]string{
 		"apple": "gapple",
@@ -40,10 +40,10 @@ func (suite *dummyTranslator) TestTranslatePath1() {
 	tr := NewDummyTranslator().(*DummyTranslator)
 
 	// When
-	TranslatePathTests(suite, tr.translatePath1, translations)
+	TranslatePathTests(suite, tr.translateWithVowelPrefix, translations)
 }
 
-func (suite *dummyTranslator) TestTranslatePath2() {
+func (suite *dummyTranslator) TestTranslateWithXrPrefix() {
 	// Giving
 	translations := map[string]string{
 		"xray": "gexray",
@@ -53,10 +53,10 @@ func (suite *dummyTranslator) TestTranslatePath2() {
 	tr := NewDummyTranslator().(*DummyTranslator)
 
 	// When
-	TranslatePathTests(suite, tr.translatePath2, translations)
+	TranslatePathTests(suite, tr.translateWithXrPrefix, translations)
 }
 
-func (suite *dummyTranslator) TestTranslatePath3() {
+func (suite *dummyTranslator) TestTranslateWithConsonantPrefix() {
 	// Giving
 	translations := map[string]string{
 		"chair": "airchogo",
@@ -67,10 +67,10 @@ func (suite *dummyTranslator) TestTranslatePath3() {
 	tr := NewDummyTranslator().(*DummyTranslator)
 
 	// When
-	TranslatePathTests(suite, tr.translatePath3, translations)
+	TranslatePathTests(suite, tr.translateWithConsonantPrefix, translations)
 }
 
-func (suite *dummyTranslator) TestTranslatePath4() {
+func (suite *dummyTranslator) TestTranslateWithConsonantPrefixFollowedBuQu() {
 	// Giving
 	translations := map[string]string{
 		"square": "aresquogo",
@@ -79,7 +79,7 @@ func (suite *dummyTranslator) TestTranslatePath4() {
 	tr := NewDummyTranslator().(*DummyTranslator)
 
 	// When
-	TranslatePathTests(suite, tr.translatePath4, translations)
+	TranslatePathTests(suite, tr.translateWithConsonantPrefixFollowedBuQu, translations)
 }
 
 func (suite *dummyTranslator) TestTranslateIgnoreApostrophe() {

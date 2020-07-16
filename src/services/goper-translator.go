@@ -12,22 +12,22 @@ func NewDummyTranslator() Translator {
 	return &DummyTranslator{}
 }
 
-// translatePath1 1. If a word starts with a vowel letter, add prefix “g” to
+// translateWithVowelPrefix 1. If a word starts with a vowel letter, add prefix “g” to
 // the word (ex. apple => gapple)
-func (tr *DummyTranslator) translatePath1(str string) string {
+func (tr *DummyTranslator) translateWithVowelPrefix(word string) string {
 	var sb strings.Builder
-	if isVowel(rune(str[0])) {
+	if isVowel(rune(word[0])) {
 		sb.WriteRune('g')
-		sb.WriteString(str)
+		sb.WriteString(word)
 		return sb.String()
 	}
-	return str
+	return word
 }
 
-// translatePath2 2. If a word starts with the consonant letters “xr”, add the prefix
+// translateWithXrPrefix 2. If a word starts with the consonant letters “xr”, add the prefix
 // “ge” to the begging of the word. Such words as “xray” actually sound in the beginning
 // with vowel sound as you pronounce them so a true gopher would say “gexray”.
-func (tr *DummyTranslator) translatePath2(str string) string {
+func (tr *DummyTranslator) translateWithXrPrefix(str string) string {
 	var sb strings.Builder
 	if strings.HasPrefix(str, "xr") {
 		sb.WriteString("ge")
@@ -37,10 +37,10 @@ func (tr *DummyTranslator) translatePath2(str string) string {
 	return str
 }
 
-// translatePath3 3. If a word starts with a consonant sound, move it to the end
+// translateWithConsonantPrefix 3. If a word starts with a consonant sound, move it to the end
 // of the word and then add “ogo” suffix to the word. Consonant sounds can be made
 // up of multiple consonants, a.k.a. a consonant cluster (e.g. "chair" -> "airchogo”).
-func (tr *DummyTranslator) translatePath3(str string) string {
+func (tr *DummyTranslator) translateWithConsonantPrefix(str string) string {
 	var sb strings.Builder
 	if !isVowel(rune(str[0])) {
 		var consonantPrefixLen int
@@ -53,10 +53,10 @@ func (tr *DummyTranslator) translatePath3(str string) string {
 	return str
 }
 
-// translatePath4 4. If a word starts with a consonant sound followed by "qu", move it
+// translateWithConsonantPrefixFollowedBuQu 4. If a word starts with a consonant sound followed by "qu", move it
 // to the end of the word, and then add "ogo" suffix to the word
 // (e.g. "square" -> "aresquogo").
-func (tr *DummyTranslator) translatePath4(str string) string {
+func (tr *DummyTranslator) translateWithConsonantPrefixFollowedBuQu(str string) string {
 	var sb strings.Builder
 	if !isVowel(rune(str[0])) {
 		var consonantPrefixLen int
@@ -78,15 +78,15 @@ func (tr *DummyTranslator) Translate2Gophers(word string) (string, error) {
 	if len(word) == 0 || strings.ContainsRune(word, apostropheUnicode) {
 		return word, nil
 	}
-	translated := tr.translatePath1(word)
+	translated := tr.translateWithVowelPrefix(word)
 	if word == translated {
-		translated = tr.translatePath2(word)
+		translated = tr.translateWithXrPrefix(word)
 	}
 	if word == translated {
-		translated = tr.translatePath3(word)
+		translated = tr.translateWithConsonantPrefix(word)
 	}
 	if word == translated {
-		translated = tr.translatePath4(word)
+		translated = tr.translateWithConsonantPrefixFollowedBuQu(word)
 	}
 	log.WithFields(log.Fields{"word": word, "translated": translated}).Debug("translating word...")
 	return translated, nil
