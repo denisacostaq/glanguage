@@ -87,7 +87,7 @@ func (de *DefaultTranslatorEngine) TranslateSentence(sentence models.Translation
 			return err
 		}
 	}
-	sentence.SetTranslated(strings.Join(translatedWords, " ") + string(lastSymbol))
+	sentence.SetTranslated(strings.Join(translatedWords[:len(translatedWords) - ignored], " ") + string(lastSymbol))
 	if err := de.ds.Save(sentence); err != nil {
 		log.WithFields(log.Fields{"sentence": sentence, "err": err}).Errorln("error saving sentence")
 		return InternalErr
