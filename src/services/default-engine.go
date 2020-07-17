@@ -31,7 +31,7 @@ func (de *DefaultTranslatorEngine) TranslateWord(word models.TranslationPair) er
 	tr, err := de.translate(word.English())
 	if err != nil {
 		log.WithFields(log.Fields{"word": word, "err": err}).Errorln("unable to translate word")
-		return err
+		return InvalidWordErr
 	}
 	word.SetTranslated(tr)
 	if err := de.ds.Save(word); err != nil {

@@ -66,6 +66,8 @@ func (suite *dummyTranslator) TestTranslateWithConsonantPrefix() {
 		"my": "ymogo",
 		"jjjj": "jjjjogo",
 		"t": "togo",
+		"year": "earyogo",
+		"tyear": "yeartogo",
 	}
 	tr := NewGopherTranslator().(*GopherTranslator)
 

@@ -47,7 +47,7 @@ func (tr *GopherTranslator) translateWithConsonantPrefix(word string) string {
 	if !isVowel(rune(word[0])) {
 		const suffix = "ogo"
 		var consonantPrefixLen int
-		for consonantPrefixLen = 0; consonantPrefixLen < len(word) && !isLikeVowel(rune(word[consonantPrefixLen])); consonantPrefixLen++ {}
+		for consonantPrefixLen = 1; consonantPrefixLen < len(word) && !isLikeVowel(rune(word[consonantPrefixLen])); consonantPrefixLen++ {}
 		if consonantPrefixLen == len(word) {
 			return word + suffix
 		}
@@ -76,7 +76,7 @@ func (tr *GopherTranslator) translateWithConsonantPrefixFollowedBuQu(word string
 		} else {
 			quIndex = strings.Index(word, qu)
 		}
-		for consonantPrefixLen = 0; !isLikeVowel(rune(word[consonantPrefixLen])) && (word[consonantPrefixLen] != 'q' || consonantPrefixLen < quIndex); consonantPrefixLen++ {}
+		for consonantPrefixLen = 1; !isLikeVowel(rune(word[consonantPrefixLen])) && (word[consonantPrefixLen] != 'q' || consonantPrefixLen < quIndex); consonantPrefixLen++ {}
 		log.Warningln(consonantPrefixLen, word, strings.HasPrefix(word[consonantPrefixLen:], "qu"), word[consonantPrefixLen+len(qu):])
 		log.Warningln(word[:consonantPrefixLen+len(qu)])
 		if strings.HasPrefix(word[consonantPrefixLen:], "qu") {
